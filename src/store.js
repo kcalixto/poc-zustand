@@ -36,7 +36,17 @@ const store = (set) => ({
     })),
 })
 
+const log = (config) => (set, get, api) => config(
+    // ovewrite the set function
+    (...args) => {
+        console.log(args);
+        set(...args)
+    },
+    get,
+    api,
+)
+
 // shallow avoids unnecessary re-renders by comparing the previous value with the new one
-export const useStore = createWithEqualityFn(persist(store, {
+export const useStore = createWithEqualityFn(log(persist(store, {
     name: "store",
-}), shallow)
+})), shallow)
