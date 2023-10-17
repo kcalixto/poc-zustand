@@ -1,8 +1,22 @@
 import { shallow } from "zustand/shallow"
 import { createWithEqualityFn } from "zustand/traditional"
 import { persist } from "zustand/middleware"
+import axios from "axios"
 
 const store = (set) => ({
+    fetch: async () => {
+        const { data } = await axios.get("https://dummyjson.com/todos")
+        const tasks = data.todos.map((todo) => {
+            return {
+                id: todo.id,
+                title: todo.todo,
+                state: todo.completed ? "DONE" : "ONGOING"
+            }
+        })
+
+        set({ tasks: tasks })
+    },
+
     tasks: [],
 
     draggedTask: null,
@@ -50,3 +64,5 @@ const log = (config) => (set, get, api) => config(
 export const useStore = createWithEqualityFn(log(persist(store, {
     name: "store",
 })), shallow)
+
+// useStore.getState().fetch()
